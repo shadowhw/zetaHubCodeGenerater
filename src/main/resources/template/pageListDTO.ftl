@@ -1,6 +1,10 @@
 package ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto;
 
-import com.heyexi.common.domain.dto.BasePage;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.heyexi.common.domain.dto.BasePageDTO;
+
 import lombok.experimental.Accessors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +38,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ToString
-public class ${entityName}PageListDTO extends BasePage {
+public class ${entityName}PageListDTO extends BasePageDTO {
 
 <#if tableFieldData?has_content>
     <#list tableFieldData as field>
@@ -50,6 +54,12 @@ public class ${entityName}PageListDTO extends BasePage {
         <#if field.javaDataType?has_content && field.javaDataType == 'LocalDate'>
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
+        </#if>
+        <#if field.javaDataType?has_content && field.javaDataType == 'String'>
+    @NotBlank(message = "${field.entityFieldName} can not be blank")
+        </#if>
+        <#if field.javaDataType?has_content && (field.javaDataType == 'Integer' || field.javaDataType == 'Long')>
+    @NotNull(message = "${field.entityFieldName} can not be null")
         </#if>
         <#if field.javaDataType?has_content && field.entityFieldName?has_content>
     private ${field.javaDataType} ${field.entityFieldName};

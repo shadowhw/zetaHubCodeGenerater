@@ -14,6 +14,7 @@ import cn.hutool.core.bean.BeanUtil;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto.${entityName}SaveOrUpdateDTO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.vo.${entityName}DetailVO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.convert.${entityName}Convert;
+import cn.hutool.core.text.CharSequenceUtil;
 import com.heyexi.common.utils.BeanCommonUtils;
 import java.util.Optional;
 import com.heyexi.common.constants.BaseConstant;
@@ -30,7 +31,7 @@ import com.heyexi.common.constants.DelFlagEnum;
  * @Description
  */
 @Service
-public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements ${entityName}Service {
+public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements I${entityName}Service {
 
     private final ${entityName}Mapper ${humpEntityName}Mapper;
     private final ${entityName}Convert ${humpEntityName}Convert;
@@ -68,6 +69,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
     <#if globalConfig.primaryFieldName??>
     @Override
     public ${entityName}DetailVO query${entityName}Detail(String ${globalConfig.primaryFieldName}) {
+        validPrimaryCode(${globalConfig.primaryFieldName});
         ${entityName} ${humpEntityName} = ${humpEntityName}Mapper.selectOne(Wrappers.<${entityName}>lambdaQuery()
                 .eq(${entityName}::get${globalConfig.primaryFieldName?cap_first}, ${globalConfig.primaryFieldName})
         <#if globalConfig.delFiledName??>
@@ -79,6 +81,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
     <#else>
     @Override
     public ${entityName}DetailVO query${entityName}Detail(String id) {
+        validPrimaryCode(id);
         ${entityName} ${humpEntityName} = ${humpEntityName}Mapper.selectOne(Wrappers.<${entityName}>lambdaQuery()
                 .eq(${entityName}::getId, id)
             <#if globalConfig.delFiledName??>
@@ -92,6 +95,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
     <#if globalConfig.primaryFieldName??>
     @Override
     public String delete${entityName}(String ${globalConfig.primaryFieldName}) {
+        validPrimaryCode(${globalConfig.primaryFieldName});
         int rows = ${humpEntityName}Mapper.delete(Wrappers.<${entityName}>lambdaQuery()
                 .eq(${entityName}::get${globalConfig.primaryFieldName?cap_first}, ${globalConfig.primaryFieldName})
                         <#if globalConfig.delFiledName??>
@@ -103,6 +107,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
     <#else>
     @Override
     public String delete${entityName}(String id) {
+        validPrimaryCode(id);
         int rows = ${humpEntityName}Mapper.delete(Wrappers.<${entityName}>lambdaQuery()
                 .eq(${entityName}::getId, id)
         <#if globalConfig.delFiledName??>
@@ -148,6 +153,17 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
                     ).orElseThrow(() -> {
                         throw new RuntimeException("数据不存在，更新失败");
                     });
+        }
+    }
+
+    /**
+     * 校验查询主键是否为空
+     *
+     * @param code
+     */
+    private void validPrimaryCode(String code) {
+        if (CharSequenceUtil.isBlank(code)) {
+            throw new IllegalArgumentException("code 不能为空");
         }
     }
 

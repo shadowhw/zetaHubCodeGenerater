@@ -38,6 +38,7 @@ public interface SourceCodeGenerateConstant {
         String SERVICE_IMPL = "serviceImpl.ftl";
         String MAPPER = "mapper.ftl";
         String MAPPER_IMPL = "mapperImpl.ftl";
+        String TABLE_DDL = "tableDDL.ftl";
     }
 
     /**
@@ -47,6 +48,7 @@ public interface SourceCodeGenerateConstant {
         String JAVA = ".java";
         String VUE = ".vue";
         String XML = ".xml";
+        String SQL = ".sql";
     }
 
     /**

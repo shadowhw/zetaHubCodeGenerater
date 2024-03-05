@@ -1,6 +1,7 @@
 package com.heyexi.generater.service;
 
 import com.heyexi.generater.dto.ZetaHubCodeGenerator;
+import com.heyexi.generater.dto.table.TableGlobalConfig;
 
 /**
  * @Author heyexi
@@ -15,5 +16,12 @@ public interface SourceCodeGenerateService {
      * @param zetaHubCodeGenerator
      */
     void generate(ZetaHubCodeGenerator zetaHubCodeGenerator);
+
+    /**
+     * 生成表DDL
+     *
+     * @param tableGlobalConfig
+     */
+    void generateTableDDL(TableGlobalConfig tableGlobalConfig);
 
 }

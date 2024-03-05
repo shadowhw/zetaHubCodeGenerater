@@ -9,8 +9,9 @@ import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto.${e
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.vo.${entityName}PageListVO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto.${entityName}SaveOrUpdateDTO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.vo.${entityName}DetailVO;
+import lombok.RequiredArgsConstructor;
+
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 
@@ -21,24 +22,22 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/${packageConfig.moduleName}/${humpEntityName}")
-public class ${entityName}Controller {
+@RequiredArgsConstructor
+public class ${entityName}Controller implements ${entityName}FeignClient {
 
-    private final ${entityName}Service ${humpEntityName}Service;
+    private final I${entityName}Service ${humpEntityName}Service;
 
-    public ${entityName}Controller(${entityName}Service ${humpEntityName}Service) {
-        this.${humpEntityName}Service = ${humpEntityName}Service;
-    }
 
     @Description("分页查询")
     @PostMapping("/pageList")
-    @ResponseBody
+    @Override
     public Back<PageVO.Resp<${entityName}PageListVO>> ${humpEntityName}PageList(@Valid @RequestBody ${entityName}PageListDTO dto) {
         return Back.success(${humpEntityName}Service.selectPageList(dto));
     }
 
     @Description("新增")
     @PostMapping("/create${entityName}")
-    @ResponseBody
+    @Override
     public Back<String> create(@Valid @RequestBody ${entityName}SaveOrUpdateDTO dto) {
         String res = ${humpEntityName}Service.create${entityName}(dto);
         return Objects.isNull(res) ? Back.fail() : Back.success(res);
@@ -46,7 +45,7 @@ public class ${entityName}Controller {
 
     @Description("更新")
     @PostMapping("/update${entityName}")
-    @ResponseBody
+    @Override
     public Back<String> update(@Valid @RequestBody ${entityName}SaveOrUpdateDTO dto) {
         String res = ${humpEntityName}Service.update${entityName}(dto);
         return Objects.isNull(res) ? Back.fail() : Back.success(res);
@@ -55,15 +54,15 @@ public class ${entityName}Controller {
     <#if globalConfig.primaryFieldName??>
     @Description("查询详情")
     @GetMapping("/query${entityName}Detail")
-    @ResponseBody
-    public Back<${entityName}DetailVO> query${entityName}Detail(@RequestParam("${globalConfig.primaryFieldName}") @NotBlank(message = "${globalConfig.primaryFieldName} can not be null") String ${globalConfig.primaryFieldName}) {
+    @Override
+    public Back<${entityName}DetailVO> query${entityName}Detail(@RequestParam("${globalConfig.primaryFieldName}") String ${globalConfig.primaryFieldName}) {
         return Back.success(${humpEntityName}Service.query${entityName}Detail(${globalConfig.primaryFieldName}));
     }
         <#else>
     @Description("查询详情")
     @GetMapping("/query${entityName}Detail")
-    @ResponseBody
-    public Back<${entityName}DetailVO> query${entityName}Detail(@RequestParam("id") @NotBlank(message = "id can not be null") String id) {
+    @Override
+    public Back<${entityName}DetailVO> query${entityName}Detail(@RequestParam("id") String id) {
         return Back.success(${humpEntityName}Service.query${entityName}Detail(id));
     }
     </#if>
@@ -71,16 +70,16 @@ public class ${entityName}Controller {
     <#if globalConfig.primaryFieldName??>
     @Description("删除")
     @DeleteMapping("/delete${entityName}")
-    @ResponseBody
-    public Back<String> delete${entityName}(@RequestParam("${globalConfig.primaryFieldName}") @NotBlank(message = "${globalConfig.primaryFieldName} can not be null") String ${globalConfig.primaryFieldName}) {
+    @Override
+    public Back<String> delete${entityName}(@RequestParam("${globalConfig.primaryFieldName}") String ${globalConfig.primaryFieldName}) {
         String res = ${humpEntityName}Service.delete${entityName}(${globalConfig.primaryFieldName});
         return Objects.isNull(res) ? Back.fail() : Back.success(res);
     }
         <#else>
     @Description("删除")
     @GetMapping("/delete${entityName}")
-    @ResponseBody
-    public Back<String> delete${entityName}(@RequestParam("id") @NotBlank(message = "id can not be null") String id) {
+    @Override
+    public Back<String> delete${entityName}(@RequestParam("id") String id) {
         String res = ${humpEntityName}Service.delete${entityName}(id);
         return Objects.isNull(res) ? Back.fail() : Back.success(res);
     }

@@ -9,10 +9,12 @@ import com.heyexi.generater.dto.RenderDataDTO;
 import com.heyexi.generater.dto.TableFieldData;
 import com.heyexi.generater.dto.TemplateInfoData;
 import com.heyexi.generater.dto.ZetaHubCodeGenerator;
+import com.heyexi.generater.dto.table.TableGlobalConfig;
 import com.heyexi.generater.service.CommonServiceAbstract;
 import com.heyexi.generater.service.IZetaHubDataSourceService;
 import com.heyexi.generater.service.SourceCodeGenerateService;
 import freemarker.template.Configuration;
+import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -137,6 +139,64 @@ public class SourceCodeGenerateServiceImpl extends CommonServiceAbstract impleme
     }
 
     /**
+     * 生成表DDL
+     *
+     * @param tableGlobalConfig
+     */
+    @Override
+    public void generateTableDDL(TableGlobalConfig tableGlobalConfig) {
+        // 参数必要校验
+        validTableParam(tableGlobalConfig);
+
+        // 配置数据源
+//        DataSourceConfig dataSourceConfig = tableGlobalConfig.getDataSourceConfig();
+//        buildDataSource(dataSourceConfig);
+
+        try {
+            Template template = freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.TABLE_DDL);
+            // 渲染模板
+            String renderedContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, tableGlobalConfig);
+            // 创建目录
+            File file = new File(tableGlobalConfig.getFilePath());
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            // 创建文件
+            StringBuilder fileName = new StringBuilder(tableGlobalConfig.getFilePath());
+            fileName.append("\\");
+            fileName.append(tableGlobalConfig.getTableName());
+            fileName.append(SourceCodeGenerateConstant.FILE_TYPE.SQL);
+
+            try (FileWriter writer = new FileWriter(fileName.toString())) {
+                writer.write(renderedContent);
+                writer.flush();
+            }
+        } catch (Exception e) {
+            log.warn("数据表DDL生成异常信息:{}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 校验表生成DTO
+     *
+     * @param tableGlobalConfig
+     */
+    private void validTableParam(TableGlobalConfig tableGlobalConfig) {
+        DataSourceConfig dataSourceConfig = tableGlobalConfig.getDataSourceConfig();
+
+        Assert.notEmpty(tableGlobalConfig.getKeyList(), "至少包含一个索引!");
+        Assert.notEmpty(tableGlobalConfig.getTableFieldInfos(), "字段信息集合不能为空!");
+//        Assert.notNull(dataSourceConfig.getUrl(), "数据库连接url不能为空!");
+//        Assert.notNull(dataSourceConfig.getUsername(), "数据库连接用户名不能为空!");
+//        Assert.notNull(dataSourceConfig.getPassword(), "数据库连接密码不能为空!");
+        Assert.hasLength(tableGlobalConfig.getPrimaryKeyColumnName(), "主键字段名不能为空!");
+        Assert.hasLength(tableGlobalConfig.getFilePath(), "主键字段名不能为空!");
+        Assert.hasLength(tableGlobalConfig.getTableName(), "表名不能为空!");
+        Assert.hasLength(tableGlobalConfig.getSchemeName(), "数据库名称不能为空!");
+    }
+
+    /**
      * 构造模板文件信息
      *
      * @param projectRootUrlPath
@@ -148,7 +208,7 @@ public class SourceCodeGenerateServiceImpl extends CommonServiceAbstract impleme
     private List<TemplateInfoData> buildTemplateInfo(String projectRootUrlPath, String entityName, RenderDataDTO renderDataDTO) throws IOException {
         List<TemplateInfoData> list = new ArrayList<>();
         // 默认忽略字段
-        List<String> ignoreFields = Arrays.asList("delFlag", "createById", "createByName", "createTime", "updateTime", "updateById", "updateByName", "orgId");
+        List<String> ignoreFields = Arrays.asList("delFlag", "createById", "createByName", "createTime", "updateTime", "updateById", "updateByName", "orgId", "orgName");
 
         // Controller
         TemplateInfoData controller = new TemplateInfoData();
@@ -230,7 +290,7 @@ public class SourceCodeGenerateServiceImpl extends CommonServiceAbstract impleme
         TemplateInfoData service = new TemplateInfoData();
         service.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.SERVICE));
         service.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.SERVICE + "\\");
-        service.setFileName(service.getUrl() + entityName + SourceCodeGenerateConstant.STRING_POOL.SERVICE
+        service.setFileName(service.getUrl() + "I" + entityName + SourceCodeGenerateConstant.STRING_POOL.SERVICE
                 + SourceCodeGenerateConstant.FILE_TYPE.JAVA);
         RenderDataDTO serviceDataDTO = renderDataDTO.cloneRenderDataDTO();
         service.setRenderDataDTO(serviceDataDTO);
