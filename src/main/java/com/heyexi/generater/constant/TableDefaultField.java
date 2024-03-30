@@ -73,7 +73,7 @@ public class TableDefaultField {
                 new TableFieldInfo(TableFieldTypeEnum.VARCHAR, "update_by_id", "64", false, "'-1'", "更新人编码", null),
                 new TableFieldInfo(TableFieldTypeEnum.VARCHAR, "update_by_name", "64", false, "'system'", "更新人姓名", null),
                 new TableFieldInfo(TableFieldTypeEnum.DATETIME, "update_time", null, false, "CURRENT_TIMESTAMP", "更新时间", "ON UPDATE CURRENT_TIMESTAMP"),
-                new TableFieldInfo(TableFieldTypeEnum.TINYINT, "delFlag", "1", false, "'0'", "是否删除[0-否 1-是]", null),
+                new TableFieldInfo(TableFieldTypeEnum.TINYINT, "del_flag", "1", false, "'0'", "是否删除[0-否 1-是]", null),
         };
         return Arrays.asList(tableFieldInfos);
     }

@@ -26,7 +26,8 @@ public interface SourceCodeGenerateConstant {
     /**
      * 模板文件名称
      */
-    interface TEMPLATE_NAME {
+    interface
+    TEMPLATE_NAME {
         String ENTITY = "entity.ftl";
         String CONTROLLER = "controller.ftl";
         String PAGE_LIST_DTO = "pageListDTO.ftl";
@@ -39,6 +40,12 @@ public interface SourceCodeGenerateConstant {
         String MAPPER = "mapper.ftl";
         String MAPPER_IMPL = "mapperImpl.ftl";
         String TABLE_DDL = "tableDDL.ftl";
+        String FEIGN = "feign.ftl";
+        String PAGE_INDEX = "pageIndex.ftl";
+        String PAGE_JS = "pageJs.ftl";
+        String PAGE_MODIFY = "pageModify.ftl";
+        String PAGE_QUERY_FORM = "pageQueryForm.ftl";
+        String PAGE_DETAIL = "pageDetail.ftl";
     }
 
     /**
@@ -49,6 +56,7 @@ public interface SourceCodeGenerateConstant {
         String VUE = ".vue";
         String XML = ".xml";
         String SQL = ".sql";
+        String JS = ".js";
     }
 
     /**
@@ -65,6 +73,10 @@ public interface SourceCodeGenerateConstant {
         String DTO = "dto";
         String CONVERT = "convert";
         String VO = "vo";
+        String FEIGN = "feign";
+        String VIEW = "view";
+        String STORES = "stores";
+        String COMPONENT = "component";
     }
 
     /**
@@ -80,6 +92,10 @@ public interface SourceCodeGenerateConstant {
         String MAPPER = "Mapper";
         String SAVE_OR_UPDATE_DTO = "SaveOrUpdateDTO";
         String CONVERT = "Convert";
+        String FEIGN_CLIENT = "FeignClient";
+        String MODIFY = "Modify";
+        String QUERY_FORM = "QueryForm";
+        String DETAIL = "Detail";
     }
 
 }

@@ -13,7 +13,7 @@ import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.vo.${en
  * @Date ${date?string('yyyy-MM-dd HH:mm:ss')}
  * @Description
  */
-public interface ${entityName}Service extends IService<${entityName}> {
+public interface I${entityName}Service extends IService<${entityName}> {
 
     /**
      * 分页查询数据

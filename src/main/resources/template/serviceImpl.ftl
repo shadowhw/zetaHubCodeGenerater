@@ -1,7 +1,9 @@
 package ${packageConfig.parentPackage}.${packageConfig.moduleName}.service.impl;
 
 import org.springframework.stereotype.Service;
-import ${packageConfig.parentPackage}.${packageConfig.moduleName}.service.${entityName}Service;
+import com.heyexi.common.back.CommonBackCodeEnum;
+import com.heyexi.common.exception.ZetaHubBizException;
+import ${packageConfig.parentPackage}.${packageConfig.moduleName}.service.I${entityName}Service;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.entity.${entityName};
 import com.heyexi.common.domain.vo.PageVO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto.${entityName}PageListDTO;
@@ -14,6 +16,7 @@ import cn.hutool.core.bean.BeanUtil;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto.${entityName}SaveOrUpdateDTO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.vo.${entityName}DetailVO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.convert.${entityName}Convert;
+import lombok.RequiredArgsConstructor;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.heyexi.common.utils.BeanCommonUtils;
 import java.util.Optional;
@@ -31,18 +34,15 @@ import com.heyexi.common.constants.DelFlagEnum;
  * @Description
  */
 @Service
+@RequiredArgsConstructor
 public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, ${entityName}> implements I${entityName}Service {
 
     private final ${entityName}Mapper ${humpEntityName}Mapper;
     private final ${entityName}Convert ${humpEntityName}Convert;
 
-    public ${entityName}ServiceImpl(${entityName}Mapper ${humpEntityName}Mapper, ${entityName}Convert ${humpEntityName}Convert) {
-        this.${humpEntityName}Mapper = ${humpEntityName}Mapper;
-        this.${humpEntityName}Convert = ${humpEntityName}Convert;
-    }
-
     @Override
     public PageVO.Resp<${entityName}PageListVO> selectPageList(${entityName}PageListDTO dto) {
+        dto.init();
         Page<${entityName}PageListVO> page = new Page<>(dto.getPageIndex(), dto.getPageSize());
         IPage<${entityName}PageListVO> iPage = ${humpEntityName}Mapper.selectPageList(page, BeanUtil.beanToMap(dto));
         return new PageVO.Resp<>(iPage);
@@ -96,25 +96,31 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
     @Override
     public String delete${entityName}(String ${globalConfig.primaryFieldName}) {
         validPrimaryCode(${globalConfig.primaryFieldName});
-        int rows = ${humpEntityName}Mapper.delete(Wrappers.<${entityName}>lambdaQuery()
-                .eq(${entityName}::get${globalConfig.primaryFieldName?cap_first}, ${globalConfig.primaryFieldName})
-                        <#if globalConfig.delFiledName??>
-                .eq(${entityName}::get${globalConfig.delFiledName?cap_first}, DelFlagEnum.DELETE_FALSE.getCode())
-                        </#if>
-        );
-        return rows > BaseConstant.NUM.NUM_0 ? id : null;
+        ${entityName} entity = new ${entityName}();
+        entity.set${globalConfig.primaryFieldName?cap_first}(${globalConfig.primaryFieldName});
+        entity.setDelFlag(DelFlagEnum.DELETE_TRUE.getCode());
+        Integer res;
+        try {
+            res = ${humpEntityName}Mapper.updateById(entity);
+        } catch (Exception e) {
+            throw new ZetaHubBizException("删除失败", e);
+        }
+        return String.valueOf(res);
     }
     <#else>
     @Override
     public String delete${entityName}(String id) {
         validPrimaryCode(id);
-        int rows = ${humpEntityName}Mapper.delete(Wrappers.<${entityName}>lambdaQuery()
-                .eq(${entityName}::getId, id)
-        <#if globalConfig.delFiledName??>
-                .eq(${entityName}::get${globalConfig.delFiledName?cap_first}, DelFlagEnum.DELETE_FALSE.getCode())
-        </#if>
-        );
-        return rows > BaseConstant.NUM.NUM_0 ? id : null;
+        ${entityName} entity = new ${entityName}();
+        entity.setId(Long.parseLong(id));
+        entity.setDelFlag(DelFlagEnum.DELETE_TRUE.getCode());
+        Integer res;
+        try {
+            res = ${humpEntityName}Mapper.updateById(entity);
+        } catch (Exception e) {
+            throw new ZetaHubBizException("删除失败", e);
+        }
+        return String.valueOf(res);
     }
     </#if>
 
@@ -151,7 +157,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
                             )
             </#if>
                     ).orElseThrow(() -> {
-                        throw new RuntimeException("数据不存在，更新失败");
+                        throw new ZetaHubBizException(CommonBackCodeEnum.DATA_NOT_EXIST_CAN_NOT_UPDATE);
                     });
         }
     }
@@ -163,7 +169,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
      */
     private void validPrimaryCode(String code) {
         if (CharSequenceUtil.isBlank(code)) {
-            throw new IllegalArgumentException("code 不能为空");
+            throw new ZetaHubBizException(CommonBackCodeEnum.ID_CAN_NOT_BE_NULL);
         }
     }
 

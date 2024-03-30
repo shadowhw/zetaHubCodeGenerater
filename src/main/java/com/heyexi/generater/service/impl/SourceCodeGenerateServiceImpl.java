@@ -284,6 +284,10 @@ public class SourceCodeGenerateServiceImpl extends CommonServiceAbstract impleme
                 + SourceCodeGenerateConstant.PACKAGE_NAME.ENTITY + "\\");
         entity.setFileName(entity.getUrl() + entityName + SourceCodeGenerateConstant.FILE_TYPE.JAVA);
         RenderDataDTO entityDataDTO = renderDataDTO.cloneRenderDataDTO();
+        List<TableFieldData> entityTableFieldData = entityDataDTO.getTableFieldData().stream().filter(t -> !ignoreFields.contains(t.getEntityFieldName()))
+                .collect(Collectors.toList());
+        entityDataDTO.setTableFieldData(entityTableFieldData);
+        entityDataDTO.setJavaDataTypeList(pageListDataDTO.getTableFieldData().stream().map(TableFieldData::getJavaDataType).collect(Collectors.toSet()));
         entity.setRenderDataDTO(entityDataDTO);
 
         // Service
@@ -324,6 +328,72 @@ public class SourceCodeGenerateServiceImpl extends CommonServiceAbstract impleme
         RenderDataDTO mapperImplDTO = renderDataDTO.cloneRenderDataDTO();
         mapperImpl.setRenderDataDTO(mapperImplDTO);
 
+        // feign
+        TemplateInfoData feign = new TemplateInfoData();
+        feign.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.FEIGN));
+        feign.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.FEIGN + "\\");
+        feign.setFileName(feign.getUrl() + entityName + SourceCodeGenerateConstant.STRING_POOL.FEIGN_CLIENT
+                + SourceCodeGenerateConstant.FILE_TYPE.JAVA);
+        RenderDataDTO reignDataDTO = renderDataDTO.cloneRenderDataDTO();
+        feign.setRenderDataDTO(reignDataDTO);
+
+        // 页面首页
+        TemplateInfoData pageIndex = new TemplateInfoData();
+        pageIndex.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.PAGE_INDEX));
+        pageIndex.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.VIEW + "\\");
+        pageIndex.setFileName(pageIndex.getUrl() + entityName + SourceCodeGenerateConstant.FILE_TYPE.VUE);
+        RenderDataDTO pageIndexDTO = renderDataDTO.cloneRenderDataDTO();
+        List<TableFieldData> pageIndexTableFieldData = pageIndexDTO.getTableFieldData().stream().filter(t -> !ignoreFields.contains(t.getEntityFieldName()))
+                .collect(Collectors.toList());
+        pageIndexDTO.setTableFieldData(pageIndexTableFieldData);
+        pageIndexDTO.setJavaDataTypeList(pageIndexDTO.getTableFieldData().stream().map(TableFieldData::getJavaDataType).collect(Collectors.toSet()));
+        pageIndex.setRenderDataDTO(pageIndexDTO);
+
+        // 请求js
+        TemplateInfoData pageJs = new TemplateInfoData();
+        pageJs.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.PAGE_JS));
+        pageJs.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.VIEW + "\\"
+                + SourceCodeGenerateConstant.PACKAGE_NAME.STORES + "\\");
+        RenderDataDTO pageJsDTO = renderDataDTO.cloneRenderDataDTO();
+        pageJs.setFileName(pageJs.getUrl() + pageJsDTO.getHumpEntityName() + SourceCodeGenerateConstant.FILE_TYPE.JS);
+        pageJs.setRenderDataDTO(pageIndexDTO);
+
+        // 修改页面
+        TemplateInfoData pageModify = new TemplateInfoData();
+        pageModify.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.PAGE_MODIFY));
+        pageModify.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.VIEW + "\\"
+                + SourceCodeGenerateConstant.PACKAGE_NAME.COMPONENT + "\\");
+        pageModify.setFileName(pageModify.getUrl() + entityName + SourceCodeGenerateConstant.STRING_POOL.MODIFY
+                + SourceCodeGenerateConstant.FILE_TYPE.VUE);
+        RenderDataDTO pageModifyDTO = renderDataDTO.cloneRenderDataDTO();
+        List<TableFieldData> pageModifyTableFieldData = pageModifyDTO.getTableFieldData().stream().filter(t -> !ignoreFields.contains(t.getEntityFieldName()))
+                .collect(Collectors.toList());
+        pageModifyDTO.setTableFieldData(pageModifyTableFieldData);
+        pageModifyDTO.setJavaDataTypeList(pageModifyDTO.getTableFieldData().stream().map(TableFieldData::getJavaDataType).collect(Collectors.toSet()));
+        pageModify.setRenderDataDTO(pageModifyDTO);
+
+        // 查询页面
+        TemplateInfoData pageSearchForm = new TemplateInfoData();
+        pageSearchForm.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.PAGE_QUERY_FORM));
+        pageSearchForm.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.VIEW + "\\"
+                + SourceCodeGenerateConstant.PACKAGE_NAME.COMPONENT + "\\");
+        pageSearchForm.setFileName(pageSearchForm.getUrl() + entityName + SourceCodeGenerateConstant.STRING_POOL.QUERY_FORM
+                + SourceCodeGenerateConstant.FILE_TYPE.VUE);
+        RenderDataDTO pageSearchFormDTO = renderDataDTO.cloneRenderDataDTO();
+        List<TableFieldData> pageSearchFormTableFieldData = pageSearchFormDTO.getTableFieldData().stream().filter(t -> !ignoreFields.contains(t.getEntityFieldName()))
+                .collect(Collectors.toList());
+        pageSearchFormDTO.setTableFieldData(pageSearchFormTableFieldData);
+        pageSearchFormDTO.setJavaDataTypeList(pageSearchFormDTO.getTableFieldData().stream().map(TableFieldData::getJavaDataType).collect(Collectors.toSet()));
+        pageSearchForm.setRenderDataDTO(pageSearchFormDTO);
+
+        // 详情页面
+        TemplateInfoData pageDetail = new TemplateInfoData();
+        pageDetail.setTemplate(freemarkerConfiguration.getTemplate(SourceCodeGenerateConstant.TEMPLATE_NAME.PAGE_DETAIL));
+        pageDetail.setUrl(projectRootUrlPath + SourceCodeGenerateConstant.PACKAGE_NAME.VIEW + "\\");
+        RenderDataDTO pageDetailDTO = renderDataDTO.cloneRenderDataDTO();
+        pageDetail.setFileName(pageDetail.getUrl() + entityName + SourceCodeGenerateConstant.STRING_POOL.DETAIL
+                + SourceCodeGenerateConstant.FILE_TYPE.VUE);
+        pageDetail.setRenderDataDTO(pageDetailDTO);
 
         list.add(controller);
         list.add(pageListDTO);
@@ -336,6 +406,12 @@ public class SourceCodeGenerateServiceImpl extends CommonServiceAbstract impleme
         list.add(saveOrUpdateDTO);
         list.add(convert);
         list.add(detailVO);
+        list.add(feign);
+        list.add(pageIndex);
+        list.add(pageJs);
+        list.add(pageModify);
+        list.add(pageSearchForm);
+        list.add(pageDetail);
         return list;
     }
 

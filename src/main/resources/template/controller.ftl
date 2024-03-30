@@ -2,7 +2,8 @@ package ${packageConfig.parentPackage}.${packageConfig.moduleName}.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.context.annotation.Description;
-import ${packageConfig.parentPackage}.${packageConfig.moduleName}.service.${entityName}Service;
+import ${packageConfig.parentPackage}.${packageConfig.moduleName}.service.I${entityName}Service;
+import ${packageConfig.parentPackage}.${packageConfig.moduleName}.feign.${entityName}FeignClient;
 import com.heyexi.common.back.Back;
 import com.heyexi.common.domain.vo.PageVO;
 import ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.dto.${entityName}PageListDTO;
@@ -27,7 +28,6 @@ public class ${entityName}Controller implements ${entityName}FeignClient {
 
     private final I${entityName}Service ${humpEntityName}Service;
 
-
     @Description("分页查询")
     @PostMapping("/pageList")
     @Override
@@ -36,7 +36,7 @@ public class ${entityName}Controller implements ${entityName}FeignClient {
     }
 
     @Description("新增")
-    @PostMapping("/create${entityName}")
+    @PostMapping("/create")
     @Override
     public Back<String> create(@Valid @RequestBody ${entityName}SaveOrUpdateDTO dto) {
         String res = ${humpEntityName}Service.create${entityName}(dto);
@@ -44,7 +44,7 @@ public class ${entityName}Controller implements ${entityName}FeignClient {
     }
 
     @Description("更新")
-    @PostMapping("/update${entityName}")
+    @PostMapping("/update")
     @Override
     public Back<String> update(@Valid @RequestBody ${entityName}SaveOrUpdateDTO dto) {
         String res = ${humpEntityName}Service.update${entityName}(dto);
@@ -53,14 +53,14 @@ public class ${entityName}Controller implements ${entityName}FeignClient {
 
     <#if globalConfig.primaryFieldName??>
     @Description("查询详情")
-    @GetMapping("/query${entityName}Detail")
+    @GetMapping("/queryDetail")
     @Override
     public Back<${entityName}DetailVO> query${entityName}Detail(@RequestParam("${globalConfig.primaryFieldName}") String ${globalConfig.primaryFieldName}) {
         return Back.success(${humpEntityName}Service.query${entityName}Detail(${globalConfig.primaryFieldName}));
     }
         <#else>
     @Description("查询详情")
-    @GetMapping("/query${entityName}Detail")
+    @GetMapping("/queryDetail")
     @Override
     public Back<${entityName}DetailVO> query${entityName}Detail(@RequestParam("id") String id) {
         return Back.success(${humpEntityName}Service.query${entityName}Detail(id));
@@ -69,7 +69,7 @@ public class ${entityName}Controller implements ${entityName}FeignClient {
 
     <#if globalConfig.primaryFieldName??>
     @Description("删除")
-    @DeleteMapping("/delete${entityName}")
+    @DeleteMapping("/delete")
     @Override
     public Back<String> delete${entityName}(@RequestParam("${globalConfig.primaryFieldName}") String ${globalConfig.primaryFieldName}) {
         String res = ${humpEntityName}Service.delete${entityName}(${globalConfig.primaryFieldName});
@@ -77,7 +77,7 @@ public class ${entityName}Controller implements ${entityName}FeignClient {
     }
         <#else>
     @Description("删除")
-    @GetMapping("/delete${entityName}")
+    @DeleteMapping("/delete")
     @Override
     public Back<String> delete${entityName}(@RequestParam("id") String id) {
         String res = ${humpEntityName}Service.delete${entityName}(id);

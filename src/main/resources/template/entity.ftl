@@ -1,6 +1,7 @@
 package ${packageConfig.parentPackage}.${packageConfig.moduleName}.domain.entity;
 
 import lombok.experimental.Accessors;
+import com.heyexi.common.domain.dto.BaseEntityDTO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -30,7 +31,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("${tableName}")
-public class ${entityName} implements Serializable {
+public class ${entityName} extends BaseEntityDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
